@@ -1,0 +1,90 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  /* Monochrome accent, black & white. Buttons/links land on 600-700 (near-black);
+ 50-100 give subtle neutral fills. */
+  --color-brand-50: #f5f5f6;
+  --color-brand-100: #e6e6e8;
+  --color-brand-200: #d2d2d6;
+  --color-brand-300: #b2b2b8;
+  --color-brand-400: #84848c;
+  --color-brand-500: #5a5a62;
+  --color-brand-600: #26262b;
+  --color-brand-700: #19191d;
+  --color-brand-800: #121215;
+  --color-brand-900: #0b0b0d;
+  --color-brand-950: #050506;
+
+  --color-ink-50: #f6f7f9;
+  --color-ink-100: #eceef2;
+  --color-ink-200: #d4d9e2;
+  --color-ink-300: #aeb7c8;
+  --color-ink-400: #8290a8;
+  --color-ink-500: #62718c;
+  --color-ink-600: #4d5a73;
+  --color-ink-700: #3f495d;
+  --color-ink-800: #373f4f;
+  --color-ink-900: #1f2433;
+  --color-ink-950: #14171f;
+
+  --font-sans:
+    "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.65;
+  letter-spacing: -0.003em;
+}
+
+/* Characterful display serif for the big statements, soft, slightly wonky,
+ so headings read as hand-set and personal rather than generic. */
+h1,
+h2 {
+  font-family: var(--font-display);
+  font-variation-settings:
+    "opsz" 144,
+    "SOFT" 60,
+    "WONK" 1;
+  letter-spacing: -0.018em;
+}
+
+/* Roomier prose for breathing space */
+p {
+  line-height: 1.75;
+}
+
+/* Utility for the subtle dotted hero backdrop */
+.bg-dotted {
+  background-image: radial-gradient(
+    theme(--color-ink-200) 1px,
+    transparent 1px
+  );
+  background-size: 22px 22px;
+}
+
+/* Gentle float for the hero brand logos (transform-only, performant) */
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+.animate-floaty {
+  animation: floaty 5s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-floaty {
+    animation: none;
+  }
+}

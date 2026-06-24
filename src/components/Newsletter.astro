@@ -1,0 +1,56 @@
+---
+/* Reusable newsletter signup. Front-end only, wire to a real list provider
+ (Mailchimp/Brevo/ConvertKit/Buttondown) where noted in the script. */
+---
+
+<section class="mx-auto max-w-6xl px-4 py-20 sm:px-6">
+  <div
+    class="rounded-2xl bg-gradient-to-br from-ink-900 to-ink-800 p-10 text-white sm:p-14"
+  >
+    <div class="mx-auto max-w-2xl text-center">
+      <h2 class="text-3xl font-semibold text-white">
+        Get the sales-stack brief
+      </h2>
+      <p class="mt-3 text-ink-200">
+        New reviews, fresh comparisons, and buying guides, a short email,
+        roughly twice a month. No spam, unsubscribe anytime.
+      </p>
+
+      <form
+        id="newsletterForm"
+        class="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row"
+      >
+        <input
+          id="newsletterEmail"
+          type="email"
+          required
+          placeholder="you@company.com"
+          aria-label="Email address"
+          class="flex-1 rounded-xl border border-ink-700 bg-ink-900/60 px-4 py-3 text-sm text-white outline-none transition placeholder:text-ink-400 focus:border-ink-400 focus:ring-2 focus:ring-ink-600"
+        />
+        <button
+          type="submit"
+          class="rounded-xl bg-white px-6 py-3 text-sm font-semibold text-ink-900 transition hover:bg-ink-100"
+        >
+          Subscribe
+        </button>
+      </form>
+      <p id="newsletterMsg" class="mt-3 hidden text-sm text-emerald-300"></p>
+    </div>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById("newsletterForm") as HTMLFormElement;
+  const msg = document.getElementById("newsletterMsg") as HTMLElement;
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+      // Wire up to a real provider here (e.g. POST to Mailchimp/Brevo/Buttondown).
+      form.classList.add("hidden");
+      msg.textContent = "You're in, check your inbox to confirm.";
+      msg.classList.remove("hidden");
+    });
+  }
+</script>

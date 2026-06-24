@@ -1,0 +1,59 @@
+---
+interface Props {
+  class?: string;
+  /** unique suffix so gradient/filter/clip ids don't clash across instances */
+  uid?: string;
+}
+const { class: className = "h-8 w-8", uid = "lg" } = Astro.props;
+---
+
+<svg
+  class={className}
+  viewBox="0 0 32 32"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+  role="img"
+  aria-label="TheSharkStack"
+>
+  <defs>
+    <linearGradient id={`bg-${uid}`} x1="3" y1="2" x2="29" y2="30" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FB923C" />
+      <stop offset="1" stop-color="#EA580C" />
+    </linearGradient>
+    <linearGradient id={`fin-${uid}`} x1="16" y1="6" x2="16" y2="22" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" />
+      <stop offset="1" stop-color="#FFE7D2" />
+    </linearGradient>
+  </defs>
+
+  <!-- badge -->
+  <rect x="0.5" y="0.5" width="31" height="31" rx="8" fill={`url(#bg-${uid})`} stroke="#C2410C" />
+
+  <!-- dorsal fin slicing forward -->
+  <path
+    d="M7.5 21 C10.5 14, 14.5 8.6, 21.4 6.6 C19.9 12, 21.4 16.8, 24.4 21 Z"
+    fill={`url(#fin-${uid})`}
+  />
+  <!-- trailing-edge depth -->
+  <path
+    d="M21.4 6.6 C19.9 12, 21.4 16.8, 24.4 21"
+    stroke="#F8C9A6"
+    stroke-width="0.8"
+    stroke-linecap="round"
+    opacity="0.7"
+  />
+
+  <!-- waterline -->
+  <g stroke="#FFFFFF" stroke-linecap="round" fill="none">
+    <path
+      d="M4 21.4 q2.6 -2.1 5.2 0 t5.2 0 t5.2 0 t5.2 0 t3 0"
+      stroke-width="1.8"
+      opacity="0.95"
+    />
+    <path
+      d="M6 25.3 q2.6 -2 5.2 0 t5.2 0 t5.2 0 t3.4 0"
+      stroke-width="1.5"
+      opacity="0.55"
+    />
+  </g>
+</svg>

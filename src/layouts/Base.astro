@@ -1,0 +1,48 @@
+---
+import "../styles/global.css";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+const {
+  title,
+  description = "Compare the best B2B sales SaaS tools, side-by-side features, pricing, ratings, and an interactive picker.",
+} = Astro.props;
+const fullTitle =
+  title === "TheSharkStack" ? title : `${title} · TheSharkStack`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin)
+  .href;
+---
+
+<!doctype html>
+<html lang="en" class="bg-ink-50 text-ink-900">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..800,0..100,0..1&family=Hanken+Grotesk:wght@400;500;600;700&display=swap"
+    />
+  </head>
+  <body class="min-h-screen font-sans antialiased">
+    <Header />
+    <main>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

@@ -1,0 +1,18 @@
+---
+/* Subtle scattered dots placed in a section's corners/gutters (clear of text),
+   echoing the hero backdrop. Parent section must be `relative overflow-hidden`. */
+const dots = [
+  "left-[3%] top-[20%] h-2 w-2 bg-ink-200",
+  "right-[5%] top-[14%] h-1.5 w-1.5 bg-ink-300",
+  "left-[7%] bottom-[22%] h-1 w-1 bg-ink-300",
+  "right-[4%] bottom-[26%] h-2 w-2 bg-ink-200",
+  "right-[12%] top-[58%] h-1 w-1 bg-ink-300",
+];
+---
+
+<div
+  class="pointer-events-none absolute inset-0 hidden overflow-hidden sm:block"
+  aria-hidden="true"
+>
+  {dots.map((d) => <span class={`absolute rounded-full ${d}`} />)}
+</div>

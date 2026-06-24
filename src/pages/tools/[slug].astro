@@ -1,0 +1,346 @@
+---
+import Base from "../../layouts/Base.astro";
+import Rating from "../../components/Rating.astro";
+import ToolBadge from "../../components/ToolBadge.astro";
+import ToolCard from "../../components/ToolCard.astro";
+import {
+  tools,
+  toolBySlug,
+  featuresForCategory,
+  categoryName,
+  formatStartingPrice,
+  budgetLabel,
+  complexityLabel,
+} from "../../data/tools";
+
+export function getStaticPaths() {
+  return tools.map((t) => ({ params: { slug: t.slug } }));
+}
+
+const { slug } = Astro.params;
+const tool = toolBySlug(slug!)!;
+
+const related = tools
+  .filter(
+    (t) =>
+      t.slug !== tool.slug &&
+      t.categories.some((c) => tool.categories.includes(c)),
+  )
+  .sort((a, b) => b.rating - a.rating)
+  .slice(0, 3);
+
+// Suggest a couple of head-to-head comparisons within the same primary category
+const versus = tools
+  .filter(
+    (t) => t.slug !== tool.slug && t.primaryCategory === tool.primaryCategory,
+  )
+  .slice(0, 3);
+
+const features = featuresForCategory(tool.primaryCategory);
+---
+
+<Base
+  title={`${tool.name} Review & Pricing`}
+  description={`${tool.name}: ${tool.tagline}. Features, pricing, pros & cons, and how it compares.`}
+>
+  <!-- Breadcrumb -->
+  <div class="mx-auto max-w-5xl px-4 pt-6 sm:px-6">
+    <nav class="flex items-center gap-1.5 text-sm text-ink-400">
+      <a href="/tools" class="hover:text-brand-600">Tools</a>
+      <span>/</span>
+      <a
+        href={`/categories/${tool.primaryCategory}`}
+        class="hover:text-brand-600">{categoryName(tool.primaryCategory)}</a
+      >
+      <span>/</span>
+      <span class="text-ink-600">{tool.name}</span>
+    </nav>
+  </div>
+
+  <!-- Header -->
+  <section class="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+    <div
+      class="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between"
+    >
+      <div class="flex items-start gap-4">
+        <ToolBadge badge={tool.badge} website={tool.website} name={tool.name} size="lg" />
+        <div>
+          <h1 class="text-3xl font-bold tracking-tight text-ink-900">
+            {tool.name}
+          </h1>
+          <p class="mt-1 text-ink-500">{tool.tagline}</p>
+          <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+            <Rating value={tool.rating} count={tool.reviewCount} size="md" />
+            <span class="text-sm text-ink-400"
+              >Founded {tool.founded} · {tool.hq}</span
+            >
+          </div>
+        </div>
+      </div>
+      <div class="flex-shrink-0">
+        <a
+          href={tool.website}
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-3 font-semibold text-white shadow-sm transition hover:bg-brand-700"
+        >
+          Visit website
+          <svg
+            class="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            ><path
+              d="M7 17 17 7M9 7h8v8"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path></svg
+          >
+        </a>
+      </div>
+    </div>
+
+    <!-- Quick stats -->
+    <div class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div class="rounded-2xl border border-ink-100 bg-white p-4">
+        <p class="text-xs font-medium text-ink-400">Starting price</p>
+        <p class="mt-1 font-bold text-ink-900">{formatStartingPrice(tool)}</p>
+      </div>
+      <div class="rounded-2xl border border-ink-100 bg-white p-4">
+        <p class="text-xs font-medium text-ink-400">Budget tier</p>
+        <p class="mt-1 font-bold text-ink-900">
+          {budgetLabel[tool.budgetTier]}
+        </p>
+      </div>
+      <div class="rounded-2xl border border-ink-100 bg-white p-4">
+        <p class="text-xs font-medium text-ink-400">Complexity</p>
+        <p class="mt-1 font-bold text-ink-900">
+          {complexityLabel[tool.complexity]}
+        </p>
+      </div>
+      <div class="rounded-2xl border border-ink-100 bg-white p-4">
+        <p class="text-xs font-medium text-ink-400">Integrations</p>
+        <p class="mt-1 font-bold text-ink-900">{tool.integrationsCount}+</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-5xl px-4 sm:px-6">
+    <div class="grid gap-10 lg:grid-cols-3">
+      <div class="lg:col-span-2">
+        <!-- Overview -->
+        <h2 class="text-xl font-bold text-ink-900">Overview</h2>
+        <p class="mt-3 leading-relaxed text-ink-600">{tool.description}</p>
+
+        <div
+          class="mt-5 rounded-2xl border border-brand-100 bg-brand-50/60 p-5"
+        >
+          <p class="text-sm font-semibold text-brand-800">Best for</p>
+          <p class="mt-1 text-brand-900">{tool.bestFor}</p>
+        </div>
+
+        <!-- Pros & cons -->
+        <div class="mt-10 grid gap-5 sm:grid-cols-2">
+          <div class="rounded-2xl border border-ink-100 p-5">
+            <h3 class="flex items-center gap-2 font-semibold text-emerald-700">
+              <svg
+                class="h-5 w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                ><path
+                  d="M20 6 9 17l-5-5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></path></svg
+              >
+              Pros
+            </h3>
+            <ul class="mt-3 space-y-2">
+              {
+                tool.pros.map((p) => (
+                  <li class="flex gap-2 text-sm text-ink-600">
+                    <span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-500" />
+                    {p}
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+          <div class="rounded-2xl border border-ink-100 p-5">
+            <h3 class="flex items-center gap-2 font-semibold text-rose-600">
+              <svg
+                class="h-5 w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                ><path
+                  d="M18 6 6 18M6 6l12 12"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"></path></svg
+              >
+              Cons
+            </h3>
+            <ul class="mt-3 space-y-2">
+              {
+                tool.cons.map((c) => (
+                  <li class="flex gap-2 text-sm text-ink-600">
+                    <span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-rose-400" />
+                    {c}
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+
+        <!-- Features -->
+        <h2 class="mt-10 text-xl font-bold text-ink-900">
+          Features at a glance
+        </h2>
+        <dl class="mt-4 grid gap-2 sm:grid-cols-2">
+          {
+            features.map((f) => {
+              const has = tool.features[f.key];
+              return (
+                <div class="flex items-center gap-3 rounded-xl border border-ink-100 px-4 py-3">
+                  {has ? (
+                    <svg
+                      class="h-5 w-5 flex-shrink-0 text-emerald-500"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.4"
+                    >
+                      <path
+                        d="M20 6 9 17l-5-5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      class="h-5 w-5 flex-shrink-0 text-ink-300"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2.4"
+                    >
+                      <path
+                        d="M18 6 6 18M6 6l12 12"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  )}
+                  <span
+                    class={`text-sm ${has ? "font-medium text-ink-800" : "text-ink-400"}`}
+                  >
+                    {f.label}
+                  </span>
+                </div>
+              );
+            })
+          }
+        </dl>
+
+        <!-- Pricing note -->
+        <h2 class="mt-10 text-xl font-bold text-ink-900">Pricing</h2>
+        <div class="mt-3 rounded-2xl border border-ink-100 p-5">
+          <p class="text-2xl font-bold text-ink-900">
+            {formatStartingPrice(tool)}
+          </p>
+          <p class="mt-1 text-sm text-ink-500">{tool.pricingNote}</p>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="space-y-6">
+        <div class="rounded-2xl border border-ink-100 p-5">
+          <h3 class="text-sm font-semibold text-ink-900">Categories</h3>
+          <div class="mt-3 flex flex-wrap gap-2">
+            {
+              tool.categories.map((c) => (
+                <a
+                  href={`/categories/${c}`}
+                  class="rounded-full bg-ink-50 px-3 py-1 text-xs font-medium text-ink-600 hover:bg-brand-50 hover:text-brand-700"
+                >
+                  {categoryName(c)}
+                </a>
+              ))
+            }
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-ink-100 p-5">
+          <h3 class="text-sm font-semibold text-ink-900">
+            Popular integrations
+          </h3>
+          <ul class="mt-3 space-y-2">
+            {
+              tool.popularIntegrations.map((i) => (
+                <li class="text-sm text-ink-600">{i}</li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <a
+          href={`/alternatives/${tool.slug}`}
+          class="group flex items-center justify-between rounded-2xl border border-ink-100 bg-white p-5 transition hover:border-brand-300 hover:shadow-lg hover:shadow-brand-500/5"
+        >
+          <div>
+            <h3 class="text-sm font-semibold text-ink-900">
+              Looking for alternatives?
+            </h3>
+            <p class="mt-1 text-sm text-ink-500">
+              See the best {tool.name} alternatives
+            </p>
+          </div>
+          <span
+            class="text-brand-600 group-hover:translate-x-0.5 transition-transform"
+            aria-hidden="true">&rarr;</span
+          >
+        </a>
+
+        {
+          versus.length > 0 && (
+            <div class="rounded-2xl border border-ink-100 p-5">
+              <h3 class="text-sm font-semibold text-ink-900">
+                Compare {tool.name.split(" ")[0]} with…
+              </h3>
+              <ul class="mt-3 space-y-2">
+                {versus.map((v) => (
+                  <li>
+                    <a
+                      href={`/compare/${tool.slug}-vs-${v.slug}`}
+                      class="flex items-center justify-between text-sm text-ink-600 hover:text-brand-700"
+                    >
+                      <span>vs {v.name}</span>
+                      <span aria-hidden="true">&rarr;</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        }
+      </aside>
+    </div>
+  </section>
+
+  <!-- Related -->
+  {
+    related.length > 0 && (
+      <section class="mx-auto max-w-5xl px-4 py-16 sm:px-6">
+        <h2 class="text-xl font-bold text-ink-900">Similar tools</h2>
+        <div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {related.map((t) => (
+            <ToolCard tool={t} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+</Base>

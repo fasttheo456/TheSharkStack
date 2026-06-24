@@ -1,0 +1,145 @@
+---
+import Base from "../../layouts/Base.astro";
+import ToolBadge from "../../components/ToolBadge.astro";
+import { tools, toolBySlug, categoryName } from "../../data/tools";
+import { featuredComparisons } from "../../data/comparisons";
+---
+
+<Base
+  title="Compare Sales Tools Side-by-Side"
+  description="Side-by-side comparisons of B2B sales SaaS tools, features, pricing, and ratings head to head."
+>
+  <section class="border-b border-ink-100 bg-white">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <h1 class="text-4xl font-semibold text-ink-900 sm:text-5xl">
+        Compare tools
+      </h1>
+      <p class="mt-2 max-w-2xl text-ink-500">
+        Pick any two tools to see them side-by-side, or start with a popular
+        matchup.
+      </p>
+    </div>
+  </section>
+
+  <!-- Builder -->
+  <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+    <div class="rounded-2xl border border-ink-100 bg-white p-6">
+      <h2 class="font-semibold text-ink-900">Build a comparison</h2>
+      <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
+        <label class="flex-1">
+          <span class="text-xs font-medium text-ink-400">Tool A</span>
+          <select
+            id="toolA"
+            class="mt-1 w-full rounded-xl border border-ink-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
+          >
+            {
+              tools.map((t) => (
+                <option value={t.slug} data-cats={t.categories.join(",")}>
+                  {t.name}
+                </option>
+              ))
+            }
+          </select>
+        </label>
+        <span class="hidden pb-3 text-sm font-bold text-ink-300 sm:block"
+          >VS</span
+        >
+        <label class="flex-1">
+          <span class="text-xs font-medium text-ink-400">Tool B</span>
+          <select
+            id="toolB"
+            class="mt-1 w-full rounded-xl border border-ink-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
+          >
+            {
+              tools.map((t, i) => (
+                <option
+                  value={t.slug}
+                  selected={i === 1}
+                  data-cats={t.categories.join(",")}
+                >
+                  {t.name}
+                </option>
+              ))
+            }
+          </select>
+        </label>
+        <a
+          id="compareBtn"
+          href="#"
+          class="rounded-xl bg-brand-600 px-6 py-2.5 text-center font-semibold text-white transition hover:bg-brand-700"
+          >Compare</a
+        >
+      </div>
+      <p id="compareHint" class="mt-3 text-sm text-ink-400"></p>
+    </div>
+
+    <h2 class="mt-12 font-semibold text-ink-900">Popular comparisons</h2>
+    <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        featuredComparisons.map(([a, b]) => {
+          const ta = toolBySlug(a)!;
+          const tb = toolBySlug(b)!;
+          return (
+            <a
+              href={`/compare/${a}-vs-${b}`}
+              class="group rounded-2xl border border-ink-100 bg-white p-5 transition hover:border-brand-300 hover:shadow-lg hover:shadow-brand-500/5"
+            >
+              <div class="flex items-center justify-center gap-3">
+                <ToolBadge badge={ta.badge} website={ta.website} name={ta.name} />
+                <span class="text-sm font-bold text-ink-300">VS</span>
+                <ToolBadge badge={tb.badge} website={tb.website} name={tb.name} />
+              </div>
+              <p class="mt-4 text-center font-semibold text-ink-900 group-hover:text-brand-700">
+                {ta.name.split(" ")[0]} vs {tb.name.split(" ")[0]}
+              </p>
+              <p class="mt-1 text-center text-xs text-ink-400">
+                {categoryName(ta.primaryCategory)}
+              </p>
+            </a>
+          );
+        })
+      }
+    </div>
+  </section>
+</Base>
+
+<script>
+  const a = document.getElementById("toolA") as HTMLSelectElement;
+  const b = document.getElementById("toolB") as HTMLSelectElement;
+  const btn = document.getElementById("compareBtn") as HTMLAnchorElement;
+  const hint = document.getElementById("compareHint") as HTMLElement;
+
+  const catsOf = (sel: HTMLSelectElement): string[] =>
+    (sel.options[sel.selectedIndex]?.dataset.cats || "")
+      .split(",")
+      .filter(Boolean);
+
+  function disable(msg: string) {
+    btn.setAttribute("aria-disabled", "true");
+    btn.classList.add("pointer-events-none", "opacity-50");
+    btn.href = "#";
+    hint.textContent = msg;
+  }
+
+  function update() {
+    if (a.value === b.value) {
+      disable("Pick two different tools.");
+      return;
+    }
+    const shared = catsOf(a).some((c) => catsOf(b).includes(c));
+    if (!shared) {
+      disable(
+        "These tools aren’t in the same category, pick two that compete in the same space.",
+      );
+      return;
+    }
+    btn.removeAttribute("aria-disabled");
+    btn.classList.remove("pointer-events-none", "opacity-50");
+    btn.href = `/compare/${a.value}-vs-${b.value}`;
+    hint.textContent = "";
+  }
+
+  a.addEventListener("change", update);
+  b.addEventListener("change", update);
+  update();
+</script>

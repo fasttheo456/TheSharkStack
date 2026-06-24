@@ -1,0 +1,58 @@
+---
+interface Props {
+  value: number; // out of 5
+  count?: number;
+  size?: "sm" | "md";
+}
+const { value, count, size = "sm" } = Astro.props;
+const full = Math.floor(value);
+const half = value - full >= 0.5;
+const dim = size === "md" ? "h-5 w-5" : "h-4 w-4";
+const stars = Array.from({ length: 5 }, (_, i) => {
+  if (i < full) return "full";
+  if (i === full && half) return "half";
+  return "empty";
+});
+---
+
+<div class="flex items-center gap-1.5" aria-label={`Rated ${value} out of 5`}>
+  <div class="flex">
+    {
+      stars.map((kind) => (
+        <svg
+          class={`${dim} flex-shrink-0`}
+          viewBox="0 0 20 20"
+          aria-hidden="true"
+        >
+          {kind === "half" && (
+            <defs>
+              <linearGradient id="half-grad">
+                <stop offset="50%" stop-color="#ea580c" />
+                <stop offset="50%" stop-color="#d4d9e2" />
+              </linearGradient>
+            </defs>
+          )}
+          <path
+            d="M10 1.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L10 15l-5.2 2.7 1-5.8L1.5 7.7l5.9-.9L10 1.5z"
+            fill={
+              kind === "full"
+                ? "#ea580c"
+                : kind === "half"
+                  ? "url(#half-grad)"
+                  : "#d4d9e2"
+            }
+          />
+        </svg>
+      ))
+    }
+  </div>
+  <span
+    class={`font-semibold text-ink-900 ${size === "md" ? "text-base" : "text-sm"}`}
+    >{value.toFixed(1)}</span
+  >
+  {
+    count && (
+      <span class="text-xs text-ink-400">({count.toLocaleString()})</span>
+    )
+  }
+</div>

@@ -1,0 +1,67 @@
+---
+import Logo from "./Logo.astro";
+const links = [
+  { href: "/tools", label: "All Tools" },
+  { href: "/categories", label: "Categories" },
+  { href: "/compare", label: "Comparison" },
+  { href: "/resources", label: "Resources" },
+];
+const path = Astro.url.pathname;
+---
+
+<header
+  class="sticky top-0 z-40 border-b border-ink-100 bg-white/85 backdrop-blur"
+>
+  <nav
+    class="mx-auto flex h-20 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6"
+  >
+    <a href="/" class="flex items-center gap-2 font-bold text-ink-900">
+      <Logo class="h-9 w-9" uid="h" />
+      <span class="text-lg tracking-tight">TheSharkStack</span>
+    </a>
+
+    <div class="hidden items-center gap-1 md:flex">
+      {
+        links.map((l) => (
+          <a
+            href={l.href}
+            class={`whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition ${
+              path.startsWith(l.href)
+                ? "text-brand-700"
+                : "text-ink-600 hover:bg-ink-50 hover:text-ink-900"
+            }`}
+          >
+            {l.label}
+          </a>
+        ))
+      }
+    </div>
+
+    <div class="flex items-center gap-2">
+      <a
+        href="/tools"
+        aria-label="Search tools"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-ink-200 text-ink-600 transition hover:border-ink-300 hover:text-ink-900"
+      >
+        <svg
+          class="h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M21 21l-4.35-4.35M17 11a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z"
+          ></path>
+        </svg>
+      </a>
+      <a
+        href="/submit"
+        class="whitespace-nowrap rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700"
+      >
+        Add your tool
+      </a>
+    </div>
+  </nav>
+</header>

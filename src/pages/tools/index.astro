@@ -1,0 +1,150 @@
+---
+import Base from "../../layouts/Base.astro";
+import ToolCard from "../../components/ToolCard.astro";
+import { tools } from "../../data/tools";
+import { categories } from "../../data/categories";
+
+const sorted = [...tools].sort((a, b) => b.rating - a.rating);
+---
+
+<Base
+  title="All Sales SaaS Tools"
+  description="Browse and filter every B2B sales SaaS tool we cover, by category, with ratings and starting prices."
+>
+  <section class="border-b border-ink-100 bg-white">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <h1 class="text-4xl font-semibold text-ink-900 sm:text-5xl">
+        All sales tools
+      </h1>
+      <p class="mt-3 max-w-2xl text-ink-500">
+        {tools.length} platforms across {categories.length} categories. Filter by
+        category or search by name.
+      </p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+    <!-- Controls -->
+    <div
+      class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
+    >
+      <div class="flex flex-wrap gap-2" id="filterBar">
+        <button
+          data-cat="all"
+          class="filter-btn rounded-full border px-4 py-1.5 text-sm font-medium transition"
+          aria-pressed="true">All</button
+        >
+        {
+          categories.map((c) => (
+            <button
+              data-cat={c.slug}
+              class="filter-btn rounded-full border px-4 py-1.5 text-sm font-medium transition"
+              aria-pressed="false"
+            >
+              {c.shortName}
+            </button>
+          ))
+        }
+      </div>
+      <div class="relative lg:w-72">
+        <svg
+          class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          ><path d="M21 21l-4.35-4.35M17 11a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z"
+          ></path></svg
+        >
+        <input
+          id="searchInput"
+          type="search"
+          placeholder="Search tools…"
+          class="w-full rounded-full border border-ink-200 bg-white py-2 pl-9 pr-4 text-sm outline-none transition focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
+        />
+      </div>
+    </div>
+
+    <p id="resultCount" class="mt-6 text-sm text-ink-400"></p>
+
+    <div id="toolGrid" class="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        sorted.map((t) => (
+          <div
+            class="tool-item"
+            data-cats={t.categories.join(" ")}
+            data-name={t.name.toLowerCase()}
+          >
+            <ToolCard tool={t} />
+          </div>
+        ))
+      }
+    </div>
+
+    <p id="emptyState" class="hidden py-16 text-center text-ink-400">
+      No tools match your filters.
+    </p>
+  </section>
+</Base>
+
+<script>
+  const buttons = Array.from(
+    document.querySelectorAll<HTMLButtonElement>(".filter-btn"),
+  );
+  const items = Array.from(
+    document.querySelectorAll<HTMLElement>(".tool-item"),
+  );
+  const search = document.getElementById("searchInput") as HTMLInputElement;
+  const count = document.getElementById("resultCount")!;
+  const empty = document.getElementById("emptyState")!;
+
+  let activeCat = "all";
+
+  const ACTIVE = ["bg-brand-600", "text-white", "border-brand-600"];
+  const IDLE = [
+    "bg-white",
+    "text-ink-600",
+    "border-ink-200",
+    "hover:border-ink-300",
+  ];
+
+  function paintButtons() {
+    buttons.forEach((b) => {
+      const on = b.dataset.cat === activeCat;
+      b.setAttribute("aria-pressed", String(on));
+      b.classList.remove(...ACTIVE, ...IDLE);
+      b.classList.add(...(on ? ACTIVE : IDLE));
+    });
+  }
+
+  function apply() {
+    const q = search.value.trim().toLowerCase();
+    let visible = 0;
+    items.forEach((item) => {
+      const cats = (item.dataset.cats || "").split(" ");
+      const name = item.dataset.name || "";
+      const matchCat = activeCat === "all" || cats.includes(activeCat);
+      const matchName = !q || name.includes(q);
+      const show = matchCat && matchName;
+      item.classList.toggle("hidden", !show);
+      if (show) visible++;
+    });
+    count.textContent = `${visible} tool${visible === 1 ? "" : "s"}`;
+    empty.classList.toggle("hidden", visible !== 0);
+  }
+
+  buttons.forEach((b) =>
+    b.addEventListener("click", () => {
+      activeCat = b.dataset.cat || "all";
+      paintButtons();
+      apply();
+    }),
+  );
+  search.addEventListener("input", apply);
+
+  const initialQ = new URLSearchParams(window.location.search).get("q");
+  if (initialQ) search.value = initialQ;
+
+  paintButtons();
+  apply();
+</script>

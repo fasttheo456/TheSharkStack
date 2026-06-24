@@ -1,0 +1,165 @@
+---
+import Base from "../../layouts/Base.astro";
+import ToolCard from "../../components/ToolCard.astro";
+import ToolBadge from "../../components/ToolBadge.astro";
+import Newsletter from "../../components/Newsletter.astro";
+import {
+  tools,
+  toolBySlug,
+  categoryName,
+  formatStartingPrice,
+} from "../../data/tools";
+
+export function getStaticPaths() {
+  return tools.map((t) => ({ params: { slug: t.slug } }));
+}
+
+const { slug } = Astro.params;
+const tool = toolBySlug(slug!)!;
+
+const alternatives = tools
+  .filter(
+    (t) =>
+      t.slug !== tool.slug &&
+      t.categories.some((c) => tool.categories.includes(c)),
+  )
+  .sort((a, b) => b.rating - a.rating);
+
+const topAlt = alternatives[0];
+
+const faqs = [
+  {
+    q: `What is the best alternative to ${tool.name}?`,
+    a: topAlt
+      ? `Our top-rated alternative to ${tool.name} is ${topAlt.name} (${topAlt.rating.toFixed(1)}/5). The best fit depends on your budget and feature needs, compare them side by side to decide.`
+      : `We don't currently track a direct alternative to ${tool.name} in the same category.`,
+  },
+  {
+    q: `Is there a free alternative to ${tool.name}?`,
+    a: (() => {
+      const free = alternatives.filter((a) => a.features.freePlan);
+      return free.length
+        ? `Yes, ${free.map((f) => f.name).join(", ")} offer a free plan.`
+        : `Most alternatives use paid or custom pricing, but several offer free trials so you can test before committing.`;
+    })(),
+  },
+  {
+    q: `Why switch from ${tool.name}?`,
+    a: `Teams usually look for alternatives over pricing, missing features, or a poor fit for their workflow. ${tool.cons[0] ? `A common gripe with ${tool.name}: ${tool.cons[0].charAt(0).toLowerCase() + tool.cons[0].slice(1)}.` : ""}`.trim(),
+  },
+];
+---
+
+<Base
+  title={`Best ${tool.name} Alternatives`}
+  description={`The best alternatives to ${tool.name} in ${new Date().getFullYear()}, compared on features, pricing, and ratings.`}
+>
+  <section class="border-b border-ink-100 bg-white">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <nav class="flex items-center gap-1.5 text-sm text-ink-400">
+        <a href="/alternatives" class="hover:text-brand-600">Alternatives</a>
+        <span>/</span>
+        <span class="text-ink-600">{tool.name}</span>
+      </nav>
+      <div class="mt-4 flex items-start gap-4">
+        <ToolBadge badge={tool.badge} website={tool.website} name={tool.name} size="lg" />
+        <div>
+          <h1
+            class="text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl"
+          >
+            Best {tool.name} alternatives
+          </h1>
+          <p class="mt-2 max-w-2xl text-ink-500">
+            {alternatives.length}
+            {categoryName(tool.primaryCategory).toLowerCase()} tools worth considering
+            instead of {tool.name}, ranked by our editorial score. Or
+            <a
+              href={`/tools/${tool.slug}`}
+              class="font-medium text-brand-600 hover:underline"
+            >
+              read our {tool.name} review</a
+            >.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Alternatives grid -->
+  <section class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+    {
+      alternatives.length === 0 ? (
+        <p class="text-ink-400">
+          We don't track a direct alternative to {tool.name} yet.
+        </p>
+      ) : (
+        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {alternatives.map((t) => (
+            <ToolCard tool={t} />
+          ))}
+        </div>
+      )
+    }
+  </section>
+
+  <!-- Compare directly -->
+  {
+    alternatives.length > 0 && (
+      <section class="border-y border-ink-100 bg-white">
+        <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+          <h2 class="text-3xl font-semibold text-ink-900">
+            Compare {tool.name} directly
+          </h2>
+          <p class="mt-2 text-ink-500">
+            Put {tool.name} head-to-head with any alternative.
+          </p>
+          <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {alternatives.slice(0, 6).map((t) => (
+              <a
+                href={`/compare/${tool.slug}-vs-${t.slug}`}
+                class="group flex items-center justify-between rounded-2xl border border-ink-100 bg-white p-6 transition hover:border-brand-300 hover:shadow-lg hover:shadow-brand-500/5"
+              >
+                <div class="flex items-center gap-3">
+                  <ToolBadge
+                    badge={tool.badge}
+                    website={tool.website} name={tool.name}
+                    size="sm"
+                  />
+                  <span class="text-xs font-bold text-ink-300">VS</span>
+                  <ToolBadge badge={t.badge} website={t.website} name={t.name} size="sm" />
+                </div>
+                <div class="text-right">
+                  <p class="text-sm font-semibold text-ink-900">
+                    vs {t.name.split(" ")[0]}
+                  </p>
+                  <p class="text-xs text-brand-600 group-hover:underline">
+                    Compare &rarr;
+                  </p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- FAQ -->
+  <section class="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+    <h2 class="text-3xl font-semibold text-ink-900">
+      Frequently asked questions
+    </h2>
+    <div class="mt-8 divide-y divide-ink-100">
+      {
+        faqs.map((f) => (
+          <div class="py-5">
+            <h3 class="font-semibold text-ink-900">{f.q}</h3>
+            <p class="mt-2 text-ink-600">{f.a}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <Newsletter />
+</Base>

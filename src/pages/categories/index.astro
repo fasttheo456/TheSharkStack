@@ -1,0 +1,56 @@
+---
+import Base from "../../layouts/Base.astro";
+import { Icon } from "astro-icon/components";
+import { categories } from "../../data/categories";
+import { toolsInCategory } from "../../data/tools";
+---
+
+<Base
+  title="Sales Software Categories"
+  description="Explore B2B sales SaaS by category, prospecting, sales engagement, CRM, phone systems, conversation intelligence, scheduling, and sales intelligence."
+>
+  <section class="border-b border-ink-100 bg-white">
+    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <h1 class="text-4xl font-semibold text-ink-900 sm:text-5xl">
+        Categories
+      </h1>
+      <p class="mt-3 max-w-2xl text-ink-500">
+        Every major part of the sales stack, with the top tools in each.
+      </p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+    <div class="grid gap-6 sm:grid-cols-2">
+      {
+        categories.map((c) => {
+          const count = toolsInCategory(c.slug).length;
+          return (
+            <a
+              href={`/categories/${c.slug}`}
+              class="group flex flex-col rounded-2xl border border-ink-100 bg-white p-6 transition hover:border-brand-300 hover:shadow-lg hover:shadow-brand-500/5"
+            >
+              <div class="flex items-center gap-4">
+                <span class="inline-flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 transition group-hover:bg-brand-600 group-hover:text-white">
+                  <Icon name={`lucide:${c.icon}`} class="h-6 w-6" />
+                </span>
+                <div>
+                  <h2 class="font-semibold text-ink-900 group-hover:text-brand-700">
+                    {c.name}
+                  </h2>
+                  <p class="text-sm text-ink-400">
+                    {count} tool{count === 1 ? "" : "s"}
+                  </p>
+                </div>
+              </div>
+              <p class="mt-4 text-sm text-ink-500">{c.description}</p>
+              <span class="mt-4 text-sm font-medium text-brand-600">
+                Explore {c.shortName} &rarr;
+              </span>
+            </a>
+          );
+        })
+      }
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,43 @@
+---
+interface Props {
+  badge: string; // initials, used as a fallback if no logo
+  website?: string; // brand site, used to load the real logo
+  name?: string; // for alt text
+  /** Kept for API compatibility. */
+  color?: string;
+  size?: "sm" | "md" | "lg";
+}
+const { badge, website, name, size = "md" } = Astro.props;
+
+const dim = {
+  sm: "h-9 w-9 rounded-lg",
+  md: "h-12 w-12 rounded-xl",
+  lg: "h-16 w-16 rounded-2xl",
+}[size];
+const imgDim = { sm: "h-5 w-5", md: "h-7 w-7", lg: "h-9 w-9" }[size];
+
+let domain = "";
+try {
+  if (website) domain = new URL(website).hostname.replace(/^www\./, "");
+} catch {}
+const src = domain ? `https://icons.duckduckgo.com/ip3/${domain}.ico` : "";
+---
+
+<span
+  class={`inline-flex flex-shrink-0 items-center justify-center overflow-hidden border border-ink-100 bg-white ${dim}`}
+>
+  {
+    src ? (
+      <img
+        src={src}
+        alt={name ? `${name} logo` : ""}
+        width="64"
+        height="64"
+        loading="lazy"
+        class={`${imgDim} object-contain`}
+      />
+    ) : (
+      <span class="font-bold text-ink-700">{badge}</span>
+    )
+  }
+</span>
