@@ -1,18 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <defs>
-    <linearGradient id="fbg" x1="3" y1="2" x2="29" y2="30" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FB923C" />
-      <stop offset="1" stop-color="#EA580C" />
-    </linearGradient>
-    <linearGradient id="ffin" x1="16" y1="6" x2="16" y2="22" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFFFFF" />
-      <stop offset="1" stop-color="#FFE7D2" />
-    </linearGradient>
-  </defs>
-  <rect x="0.5" y="0.5" width="31" height="31" rx="8" fill="url(#fbg)" stroke="#C2410C" />
-  <path d="M7.5 21 C10.5 14, 14.5 8.6, 21.4 6.6 C19.9 12, 21.4 16.8, 24.4 21 Z" fill="url(#ffin)" />
-  <g stroke="#FFFFFF" stroke-linecap="round" fill="none">
-    <path d="M4 21.4 q2.6 -2.1 5.2 0 t5.2 0 t5.2 0 t5.2 0 t3 0" stroke-width="1.8" opacity="0.95" />
-    <path d="M6 25.3 q2.6 -2 5.2 0 t5.2 0 t5.2 0 t3.4 0" stroke-width="1.5" opacity="0.55" />
+  <rect x="0.5" y="0.5" width="31" height="31" rx="8" fill="#0F1318" stroke="#0F1318" />
+  <path d="M7.5 21 C10.5 14, 14.5 8.6, 21.4 6.6 C19.9 12, 21.4 16.8, 24.4 21 Z" fill="#FFFFFF" />
+  <g stroke="#16C95A" stroke-linecap="round" fill="none">
+    <path d="M4 21.4 q2.6 -2.1 5.2 0 t5.2 0 t5.2 0 t5.2 0 t3 0" stroke-width="2" opacity="1" />
+    <path d="M6 25.3 q2.6 -2 5.2 0 t5.2 0 t5.2 0 t3.4 0" stroke-width="1.6" opacity="0.6" />
   </g>
 </svg>

@@ -28,168 +28,155 @@ const fmtDate = (d: Date) =>
     year: "numeric",
   });
 
-// Decorative hero backdrop: brand-logo stickers kept in the top & bottom bands
-// (above and below the headline) so they never sit on the text.
-// Only brands that are actually in our directory, spread across the whole hero
-// (top band, side margins, bottom band) so none sit on the headline text.
-const heroLogoSpec = [
-  { slug: "apollo", pos: "left-[10%] top-[11%]", rot: "-rotate-[8deg]" },
-  { slug: "salesforce", pos: "left-[42%] top-[7%]", rot: "rotate-[6deg]" },
-  { slug: "gong", pos: "left-[78%] top-[11%]", rot: "rotate-[7deg]" },
-  { slug: "outreach", pos: "left-[5%] top-[46%]", rot: "rotate-[6deg]" },
-  { slug: "aircall", pos: "left-[92%] top-[44%]", rot: "-rotate-[6deg]" },
-  { slug: "hubspot-sales", pos: "left-[16%] top-[78%]", rot: "-rotate-[6deg]" },
-  { slug: "calendly", pos: "left-[52%] top-[80%]", rot: "rotate-[7deg]" },
-  { slug: "zoominfo", pos: "left-[86%] top-[76%]", rot: "-rotate-[7deg]" },
-];
-const decorLogos = heroLogoSpec.map((s) => {
-  const t = toolBySlug(s.slug)!;
+// Category chips shown in the hero.
+const chipCats = [
+  "prospecting",
+  "crm",
+  "phone-system",
+  "conversation-intelligence",
+  "sales-engagement",
+].map((s) => categories.find((c) => c.slug === s)!);
+
+// A few well-known tools to show in the logo strip under the hero.
+const logoStrip = [
+  "salesforce",
+  "hubspot-sales",
+  "apollo",
+  "gong",
+  "pipedrive",
+  "zoominfo",
+  "aircall",
+  "calendly",
+].map((slug) => {
+  const t = toolBySlug(slug)!;
   let domain = "";
   try {
     domain = new URL(t.website).hostname.replace(/^www\./, "");
   } catch {}
-  return { domain, name: t.name, pos: s.pos, rot: s.rot };
+  return { domain, name: t.name, slug };
 });
-
-// Small "speckles" sprinkled across the whole hero (tiny, so text stays readable)
-const freckles = [
-  "left-[7%] top-[24%] h-2 w-2 bg-ink-200",
-  "left-[28%] top-[16%] h-1.5 w-1.5 bg-ink-300",
-  "left-[52%] top-[20%] h-1 w-1 bg-ink-300",
-  "left-[73%] top-[15%] h-2 w-2 bg-ink-200",
-  "left-[93%] top-[28%] h-1.5 w-1.5 bg-ink-300",
-  "left-[10%] top-[48%] h-1 w-1 bg-ink-300",
-  "left-[90%] top-[46%] h-1.5 w-1.5 bg-ink-300",
-  "left-[5%] top-[64%] h-2 w-2 bg-ink-200",
-  "left-[31%] top-[62%] h-1 w-1 bg-ink-300",
-  "left-[55%] top-[64%] h-1.5 w-1.5 bg-ink-200",
-  "left-[78%] top-[60%] h-1 w-1 bg-ink-300",
-  "left-[20%] top-[86%] h-1.5 w-1.5 bg-ink-300",
-  "left-[68%] top-[88%] h-1 w-1 bg-ink-300",
-  "left-[48%] top-[90%] h-2 w-2 bg-ink-200",
-];
-
-// A couple of playful sticker accents
-const stickers = [
-  { icon: "sparkles", pos: "left-[34%] top-[16%]", cls: "h-5 w-5 -rotate-6 text-ink-300" },
-  { icon: "star", pos: "left-[80%] top-[67%]", cls: "h-4 w-4 rotate-12 text-ink-300" },
-  { icon: "plus", pos: "left-[8%] top-[52%]", cls: "h-4 w-4 text-ink-300" },
-];
 ---
 
 <Base
   title="TheSharkStack"
   description="Compare the best B2B sales SaaS tools side-by-side, features, pricing, ratings, and a searchable directory across prospecting, CRM, dialers, and conversation intelligence."
 >
-  <!-- Hero -->
-  <section class="relative overflow-hidden border-b border-ink-100">
-    <div class="absolute inset-0 bg-dotted opacity-60"></div>
+  <!-- Hero — dark poster -->
+  <section class="relative overflow-hidden bg-ink-950 text-white">
+    <!-- green halftone cluster, top-right -->
     <div
-      class="absolute inset-0 bg-gradient-to-b from-ink-50/0 via-ink-50/40 to-ink-50"
-    >
-    </div>
-
-    <!-- Decorative backdrop: brand stickers, speckles & accents (behind the text) -->
-    <div
-      class="pointer-events-none absolute inset-0"
+      class="pointer-events-none absolute right-0 top-0 h-[28rem] w-[28rem]"
+      style="background-image:radial-gradient(var(--color-emerald-500) 2px, transparent 2.4px); background-size:18px 18px; -webkit-mask-image:radial-gradient(circle at 78% 22%, #000, transparent 66%); mask-image:radial-gradient(circle at 78% 22%, #000, transparent 66%); opacity:0.18;"
       aria-hidden="true"
     >
-      {
-        freckles.map((f) => <span class={`absolute rounded-full ${f}`} />)
-      }
-      {
-        stickers.map((s) => (
-          <span class={`absolute ${s.pos}`}>
-            <Icon name={`lucide:${s.icon}`} class={s.cls} />
-          </span>
-        ))
-      }
-      {
-        decorLogos.map((l, i) => (
-          <span
-            class={`absolute ${l.pos} animate-floaty`}
-            style={`animation-delay:${i * 0.5}s`}
-          >
-            <span
-              class={`flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl border border-ink-200 bg-white shadow-sm ${l.rot}`}
-            >
-              <img
-                src={`https://icons.duckduckgo.com/ip3/${l.domain}.ico`}
-                alt=""
-                width="48"
-                height="48"
-                loading="lazy"
-                class="h-5 w-5 object-contain"
-              />
-            </span>
-          </span>
-        ))
-      }
     </div>
 
     <div
-      class="relative mx-auto flex min-h-[calc(100svh-5rem)] max-w-6xl flex-col items-center justify-center px-4 py-16 text-center sm:px-6"
+      class="relative mx-auto flex min-h-[calc(100svh-5rem)] max-w-6xl flex-col justify-center px-4 py-20 sm:px-6"
     >
-      <h1
-        class="mx-auto max-w-4xl text-5xl font-semibold leading-[1.04] text-ink-900 sm:text-7xl"
+      <p
+        class="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-400"
       >
-        The directory for <span class="text-orange-600">sales</span> software
+        {tools.length} tools · {categories.length} categories
+      </p>
+      <h1 class="mt-5 max-w-4xl text-6xl leading-[0.98] text-white sm:text-8xl">
+        The directory for <span class="text-emerald-400">sales</span> software
       </h1>
-      <p class="mx-auto mt-6 max-w-xl text-lg text-ink-500">
-        Search, compare, and choose the right sales stack, with side-by-side
-        comparisons of features, pricing, and ratings across {tools.length} tools.
+      <p class="mt-6 max-w-xl text-lg text-ink-300">
+        Search, compare, and choose the right sales stack, side by side across {
+          tools.length
+        } tools.
       </p>
 
-      <!-- Search block -->
+      <!-- Search -->
       <form
         action="/tools"
         method="get"
-        class="mx-auto mt-10 flex max-w-xl items-center gap-2 rounded-2xl border border-ink-200 bg-white p-2 shadow-sm focus-within:border-brand-400 focus-within:ring-4 focus-within:ring-brand-100"
+        class="mt-9 flex w-full max-w-xl items-center gap-2"
       >
-        <span class="pl-3 text-ink-400" aria-hidden="true">
-          <svg
-            class="h-5 w-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path d="M21 21l-4.35-4.35M17 11a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z"
-            ></path>
-          </svg>
-        </span>
-        <input
-          type="search"
-          name="q"
-          placeholder="Search for a tool, e.g. Apollo or CRM…"
-          aria-label="Search tools"
-          class="flex-1 bg-transparent px-1 py-2 text-base outline-none placeholder:text-ink-400"
-        />
+        <div
+          class="flex flex-1 items-center gap-2 rounded-xl border-2 border-emerald-500 bg-white px-3"
+        >
+          <span class="text-ink-400" aria-hidden="true">
+            <svg
+              class="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M21 21l-4.35-4.35M17 11a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z"
+              ></path>
+            </svg>
+          </span>
+          <input
+            type="search"
+            name="q"
+            placeholder="Search 20+ sales tools…"
+            aria-label="Search tools"
+            class="flex-1 bg-transparent py-3 text-base text-ink-900 outline-none placeholder:text-ink-400"
+          />
+        </div>
         <button
           type="submit"
-          class="rounded-xl bg-brand-600 px-5 py-2.5 font-semibold text-white transition hover:bg-brand-700"
+          class="rounded-xl border-2 border-emerald-500 bg-emerald-500 px-6 py-3 font-bold text-ink-900 transition hover:bg-emerald-400"
         >
-          Search
+          Hunt
         </button>
       </form>
-      <p class="mt-4 text-sm text-ink-400">
-        Popular:
+
+      <!-- Category chips -->
+      <div class="mt-6 flex flex-wrap gap-2">
         {
-          ["prospecting", "crm", "conversation-intelligence"].map((slug, i) => (
-            <>
-              {i > 0 && <span class="text-ink-300"> · </span>}
-              <a
-                href={`/categories/${slug}`}
-                class="font-medium text-brand-600 hover:underline"
-              >
-                {categories.find((c) => c.slug === slug)?.shortName}
-              </a>
-            </>
+          chipCats.map((c, i) => (
+            <a
+              href={`/categories/${c.slug}`}
+              class={
+                i === 0
+                  ? "rounded-full bg-emerald-500 px-4 py-1.5 text-sm font-semibold text-ink-900"
+                  : "rounded-full border border-ink-700 px-4 py-1.5 text-sm font-medium text-ink-200 transition hover:border-emerald-500 hover:text-white"
+              }
+            >
+              {c.shortName}
+            </a>
           ))
         }
-      </p>
+      </div>
+
+      <!-- Logo strip -->
+      <div class="mt-12 flex flex-col gap-3">
+        <p class="text-[11px] font-medium uppercase tracking-wider text-ink-400">
+          A few of the {tools.length} tools we compare
+        </p>
+        <div class="flex flex-wrap items-center gap-2.5">
+          {
+            logoStrip.map((l) => (
+              <a
+                href={`/tools/${l.slug}`}
+                title={l.name}
+                class="flex h-8 w-8 items-center justify-center rounded-lg bg-white/95 transition hover:bg-white"
+              >
+                <img
+                  src={`https://icons.duckduckgo.com/ip3/${l.domain}.ico`}
+                  alt={l.name}
+                  width="32"
+                  height="32"
+                  loading="lazy"
+                  class="h-5 w-5 object-contain"
+                />
+              </a>
+            ))
+          }
+          <a
+            href="/tools"
+            class="ml-1 text-xs font-semibold text-emerald-400 transition hover:text-emerald-300"
+          >
+            +{tools.length - logoStrip.length} more &rarr;
+          </a>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -374,7 +361,7 @@ const stickers = [
       </div>
       <a
         href="/submit"
-        class="inline-block flex-shrink-0 rounded-xl bg-white px-6 py-3 font-semibold text-brand-700 transition hover:bg-ink-50"
+        class="inline-block flex-shrink-0 rounded-xl border-2 border-white bg-orange-500 px-6 py-3 font-bold text-ink-900 shadow-[3px_3px_0_0_#ffffff] transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-orange-400"
       >
         Add your tool &rarr;
       </a>
