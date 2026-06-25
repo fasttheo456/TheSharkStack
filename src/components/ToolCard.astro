@@ -1,7 +1,6 @@
 ---
 import type { Tool } from "../data/tools";
 import { categoryName, formatStartingPrice } from "../data/tools";
-import G2Link from "./G2Link.astro";
 import ToolBadge from "./ToolBadge.astro";
 
 interface Props {
@@ -46,12 +45,8 @@ const { tool } = Astro.props;
     }
   </div>
 
-  <div class="mt-4 flex items-center justify-between">
-    <G2Link name={tool.name} />
-  </div>
-
   <div
-    class="mt-4 flex items-center justify-between border-t border-ink-100 pt-4"
+    class="mt-5 flex items-center justify-between border-t border-ink-100 pt-4"
   >
     <div>
       <span class="text-xs text-ink-400">From</span>
