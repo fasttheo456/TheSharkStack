@@ -1,0 +1,155 @@
+---
+import type { Tool } from "../data/tool-types";
+import {
+  categoryName,
+  formatStartingPrice,
+  featuresForCategory,
+} from "../data/tools";
+import { featureBlurbs } from "../data/feature-blurbs";
+
+interface Props {
+  tool: Tool;
+}
+const { tool } = Astro.props;
+
+const first = tool.name.split(" ")[0];
+const primaryCat = categoryName(tool.primaryCategory).toLowerCase();
+const otherCats = tool.categories
+  .filter((c) => c !== tool.primaryCategory)
+  .map((c) => categoryName(c).toLowerCase());
+
+const activeFeatures = featuresForCategory(tool.primaryCategory).filter(
+  (f) => tool.features[f.key],
+);
+
+const teamMap: Record<string, string> = {
+  solo: "solo founders and individual reps",
+  startup: "startups",
+  midmarket: "mid-market teams",
+  enterprise: "enterprises",
+};
+const teams = tool.teamFit.map((t) => teamMap[t] ?? t);
+const teamsText =
+  teams.length <= 1
+    ? teams[0]
+    : `${teams.slice(0, -1).join(", ")} and ${teams[teams.length - 1]}`;
+
+const complexityMap: Record<string, string> = {
+  beginner: "easy to get started with",
+  intermediate: "approachable, with a short learning curve",
+  advanced: "powerful, with a steeper learning curve",
+};
+const budgetValueMap: Record<string, string> = {
+  budget: "sits at the affordable end of the market",
+  mid: "is mid-priced for the value it delivers",
+  premium: "is a premium, higher-priced option",
+};
+
+const price = formatStartingPrice(tool);
+const notFor =
+  tool.budgetTier === "premium"
+    ? `Smaller teams on a tight budget may find it more than they need`
+    : tool.complexity === "advanced"
+      ? `Teams that want a plug-and-play tool may prefer something lighter`
+      : `It may be more than solo users with very basic needs require`;
+
+const lc = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
+const bestForLc = lc(tool.bestFor.replace(/\.$/, ""));
+const taglineLc = lc(tool.tagline);
+---
+
+<div class="space-y-12">
+  <!-- Overview -->
+  <section>
+    <h2 class="text-xl font-bold text-ink-900">Overview</h2>
+    <p class="mt-3 text-[15px] leading-[1.8] text-ink-700">
+      {tool.description}
+    </p>
+    <p class="mt-4 text-[15px] leading-[1.8] text-ink-700">
+      Founded in {tool.founded} and based in {tool.hq}, {first} competes in the{
+        " "
+      }{primaryCat} category{
+        otherCats.length > 0
+          ? `, with overlap into ${otherCats.join(" and ")}`
+          : ""
+      }. It is {complexityMap[tool.complexity]}, and it {
+        budgetValueMap[tool.budgetTier]
+      } ({price}). In practice, {first} is best for {bestForLc}.
+    </p>
+  </section>
+
+  <!-- Key features -->
+  <section>
+    <h2 class="text-xl font-bold text-ink-900">Key features</h2>
+    <p class="mt-3 text-[15px] leading-[1.8] text-ink-700">
+      Here is what {first} brings to the table, and what each capability means in
+      practice.
+    </p>
+    <div class="mt-6 space-y-5">
+      {
+        activeFeatures.map((f) => (
+          <div>
+            <p class="font-semibold text-ink-900">{f.label}</p>
+            <p class="mt-1 text-[15px] leading-[1.7] text-ink-600">
+              {featureBlurbs[f.key] ??
+                `${first} supports ${f.label.toLowerCase()}.`}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Who it's for -->
+  <section>
+    <h2 class="text-xl font-bold text-ink-900">Who it's for</h2>
+    <p class="mt-3 text-[15px] leading-[1.8] text-ink-700">
+      {tool.name} is built for {teamsText}. It is a particularly strong fit if you
+      need {bestForLc}, and reps will find it {complexityMap[tool.complexity]}.
+    </p>
+    <p class="mt-4 text-[15px] leading-[1.8] text-ink-700">
+      It is less of a fit in a few cases. {notFor}, and if {
+        lc(tool.cons[0].replace(/\.$/, ""))
+      } is a dealbreaker for you, it is worth weighing against the alternatives
+      before committing.
+    </p>
+  </section>
+
+  <!-- Integrations & ecosystem -->
+  <section>
+    <h2 class="text-xl font-bold text-ink-900">Integrations &amp; ecosystem</h2>
+    <p class="mt-3 text-[15px] leading-[1.8] text-ink-700">
+      {first} connects with around {tool.integrationsCount}+ tools, including{" "}
+      {tool.popularIntegrations.slice(0, -1).join(", ")} and {
+        tool.popularIntegrations[tool.popularIntegrations.length - 1]
+      }. That matters because a sales tool is only as useful as the rest of your
+      stack: the tighter it plugs into your CRM and workflow, the less manual data
+      entry your reps do and the cleaner your reporting stays.
+    </p>
+  </section>
+
+  <!-- Pricing & value -->
+  <section>
+    <h2 class="text-xl font-bold text-ink-900">Pricing &amp; value</h2>
+    <p class="mt-3 text-[15px] leading-[1.8] text-ink-700">
+      {first} {budgetValueMap[tool.budgetTier]}. {tool.pricingNote}. The value
+      case is strongest when {bestForLc} is a real priority for your team: in that
+      scenario the time saved and meetings booked tend to outweigh the cost. If it
+      is not, a lighter tool may serve you just as well for less.
+    </p>
+  </section>
+
+  <!-- Bottom line -->
+  <section>
+    <h2 class="text-xl font-bold text-ink-900">The bottom line</h2>
+    <p class="mt-3 text-[15px] leading-[1.8] text-ink-700">
+      {tool.name} delivers {taglineLc}, and it earns its place for {teamsText}{
+        " "
+      }that need {bestForLc}. The standout reasons to pick it are clear, {
+        lc(tool.pros[0].replace(/\.$/, ""))
+      } chief among them, while the main thing to weigh is that {
+        lc(tool.cons[0].replace(/\.$/, ""))
+      }. If that trade-off fits your situation, {first} is well worth a trial.
+    </p>
+  </section>
+</div>
