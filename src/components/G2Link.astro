@@ -1,0 +1,29 @@
+---
+interface Props {
+  name: string;
+  size?: "sm" | "md";
+}
+const { name, size = "sm" } = Astro.props;
+const url = `https://www.g2.com/search?query=${encodeURIComponent(name)}`;
+---
+
+<a
+  href={url}
+  target="_blank"
+  rel="noopener nofollow"
+  class={`inline-flex items-center gap-1.5 font-medium text-ink-500 transition hover:text-emerald-700 ${size === "md" ? "text-sm" : "text-xs"}`}
+>
+  Reviews on G2
+  <svg
+    class="h-3.5 w-3.5"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M7 17 17 7M9 7h8v8"></path>
+  </svg>
+</a>

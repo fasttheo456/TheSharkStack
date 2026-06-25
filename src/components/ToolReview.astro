@@ -5,7 +5,7 @@ import {
   formatStartingPrice,
 } from "../data/tools";
 import ToolBadge from "./ToolBadge.astro";
-import Rating from "./Rating.astro";
+import G2Link from "./G2Link.astro";
 
 interface Props {
   slug: string;
@@ -37,7 +37,7 @@ const features = t
           <p class="mt-0.5 text-sm text-ink-500">{t.tagline}</p>
         </div>
         <div class="hidden flex-shrink-0 sm:block">
-          <Rating value={t.rating} count={t.reviewCount} />
+          <G2Link name={t.name} />
         </div>
       </div>
 

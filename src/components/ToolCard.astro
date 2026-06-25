@@ -1,7 +1,7 @@
 ---
 import type { Tool } from "../data/tools";
 import { categoryName, formatStartingPrice } from "../data/tools";
-import Rating from "./Rating.astro";
+import G2Link from "./G2Link.astro";
 import ToolBadge from "./ToolBadge.astro";
 
 interface Props {
@@ -47,7 +47,7 @@ const { tool } = Astro.props;
   </div>
 
   <div class="mt-4 flex items-center justify-between">
-    <Rating value={tool.rating} count={tool.reviewCount} />
+    <G2Link name={tool.name} />
   </div>
 
   <div
