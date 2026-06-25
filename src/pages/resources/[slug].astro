@@ -1,6 +1,7 @@
 ---
 import Base from "../../layouts/Base.astro";
-import { tagColor } from "../../data/articleTags";
+import Logo from "../../components/Logo.astro";
+import ToolReview from "../../components/ToolReview.astro";
 import { getCollection, render } from "astro:content";
 
 export async function getStaticPaths() {
@@ -12,7 +13,7 @@ export async function getStaticPaths() {
 }
 
 const { article } = Astro.props;
-const { Content } = await render(article);
+const { Content, headings } = await render(article);
 
 const fmtDate = (d: Date) =>
   d.toLocaleDateString("en-US", {
@@ -20,45 +21,206 @@ const fmtDate = (d: Date) =>
     day: "numeric",
     year: "numeric",
   });
+
+// Reading time from the raw markdown body.
+const words = (article.body ?? "").split(/\s+/).filter(Boolean).length;
+const readingTime = Math.max(1, Math.round(words / 200));
+
+// Table of contents (top-level sections).
+const toc = headings.filter((h) => h.depth === 2);
+
+// Related articles (newest first, excluding this one).
+const related = (await getCollection("articles", ({ data }) => !data.draft))
+  .filter((a) => a.id !== article.id)
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
 ---
 
 <Base title={article.data.title} description={article.data.description}>
-  <article class="mx-auto max-w-3xl px-4 py-16 sm:px-6">
-    <nav class="flex items-center gap-1.5 text-sm text-ink-400">
-      <a href="/resources" class="hover:text-brand-600">Resources</a>
-      <span>/</span>
-      <span class="text-ink-600">{article.data.tag}</span>
-    </nav>
+  <!-- Article header -->
+  <header class="relative overflow-hidden bg-ink-950 text-white">
+    <div
+      class="pointer-events-none absolute right-0 top-0 h-72 w-72"
+      style="background-image:radial-gradient(var(--color-emerald-500) 2px, transparent 2.4px); background-size:18px 18px; -webkit-mask-image:radial-gradient(circle at 80% 20%, #000, transparent 65%); mask-image:radial-gradient(circle at 80% 20%, #000, transparent 65%); opacity:0.14;"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="relative mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-20">
+      <nav class="flex items-center gap-1.5 text-sm text-ink-400">
+        <a href="/resources" class="hover:text-emerald-400">Resources</a>
+        <span>/</span>
+        <span class="text-ink-300">{article.data.tag}</span>
+      </nav>
 
-    <header class="mt-6">
       <span
-        class={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${tagColor(article.data.tag)}`}
+        class="mt-6 inline-block rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-bold uppercase tracking-wide text-emerald-400"
         >{article.data.tag}</span
       >
-      <h1
-        class="mt-4 text-4xl font-semibold leading-tight text-ink-900 sm:text-5xl"
-      >
+      <h1 class="mt-4 text-4xl leading-[1.08] text-white sm:text-5xl">
         {article.data.title}
       </h1>
-      <p class="mt-4 text-lg text-ink-500">{article.data.description}</p>
-      <p class="mt-5 text-sm text-ink-400">
-        {article.data.author && <span>By {article.data.author} · </span>}
-        {fmtDate(article.data.date)}
+      <p class="mt-5 text-lg leading-relaxed text-ink-300">
+        {article.data.description}
       </p>
-    </header>
 
-    <div
-      class="prose prose-ink mt-10 max-w-none prose-headings:font-display prose-headings:font-semibold prose-a:text-brand-700 prose-a:font-medium"
-    >
-      <Content />
+      <div class="mt-8 flex items-center gap-3">
+        <Logo class="h-10 w-10" uid="author" />
+        <div class="text-left">
+          <p class="text-sm font-medium text-white">
+            {article.data.author ?? "TheSharkStack"}
+          </p>
+          <p class="text-xs text-ink-400">
+            {fmtDate(article.data.date)} · {readingTime} min read
+          </p>
+        </div>
+      </div>
     </div>
+  </header>
 
-    <div class="mt-12 border-t border-ink-100 pt-8">
-      <a
-        href="/resources"
-        class="text-sm font-medium text-brand-600 hover:text-brand-700"
-        >&larr; Back to all resources</a
+  <div
+    class="mx-auto grid max-w-5xl gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[minmax(0,1fr)_240px]"
+  >
+    <article class="min-w-0">
+      <div
+        class="prose prose-lg max-w-none prose-headings:scroll-mt-24 prose-headings:text-ink-900 prose-h2:mt-14 prose-h2:mb-4 prose-h2:text-[1.7rem] prose-h3:mt-10 prose-h3:text-xl prose-p:text-ink-700 prose-p:leading-[1.8] prose-a:font-medium prose-a:text-emerald-700 prose-a:underline prose-a:decoration-emerald-300 prose-a:underline-offset-2 hover:prose-a:decoration-emerald-600 prose-strong:font-semibold prose-strong:text-ink-900 prose-blockquote:rounded-r-xl prose-blockquote:border-l-4 prose-blockquote:border-emerald-400 prose-blockquote:bg-emerald-50/70 prose-blockquote:px-5 prose-blockquote:py-2 prose-blockquote:font-normal prose-blockquote:not-italic prose-blockquote:text-ink-700 prose-li:leading-[1.7] prose-li:text-ink-700 prose-li:marker:text-emerald-500 prose-hr:border-ink-100 prose-table:text-sm prose-th:text-ink-900 prose-td:text-ink-700"
       >
-    </div>
-  </article>
+        <Content />
+      </div>
+
+      {
+        article.data.tools && article.data.tools.length > 0 && (
+          <section class="mt-16">
+            <h2 class="text-2xl font-bold tracking-tight text-ink-900">
+              The tools in this guide
+            </h2>
+            <p class="mt-1.5 text-ink-500">
+              Pricing, standout features, and where each one wins.
+            </p>
+            <div class="mt-7 space-y-6">
+              {article.data.tools.map((s, i) => (
+                <ToolReview slug={s} rank={i + 1} />
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <!-- Bottom CTA -->
+      <div
+        class="mt-16 flex flex-col items-start justify-between gap-5 rounded-2xl bg-ink-950 p-8 text-white sm:flex-row sm:items-center"
+      >
+        <div>
+          <p class="text-xl font-semibold">Build your sales stack</p>
+          <p class="mt-1 text-sm text-ink-300">
+            Compare 20+ sales tools side by side, free.
+          </p>
+        </div>
+        <a
+          href="/tools"
+          class="inline-block flex-shrink-0 rounded-xl bg-emerald-500 px-6 py-3 font-semibold text-ink-900 transition hover:bg-emerald-400"
+        >
+          Browse tools &rarr;
+        </a>
+      </div>
+
+      <div class="mt-10 border-t border-ink-100 pt-6">
+        <a
+          href="/resources"
+          class="text-sm font-medium text-emerald-700 hover:text-emerald-800"
+          >&larr; Back to all resources</a
+        >
+      </div>
+    </article>
+
+    <!-- Sidebar -->
+    <aside class="hidden lg:block">
+      <div class="sticky top-24 space-y-8">
+        {
+          toc.length > 0 && (
+            <nav aria-label="On this page">
+              <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">
+                On this page
+              </p>
+              <ul class="mt-3 space-y-1 border-l border-ink-200">
+                {toc.map((h) => (
+                  <li>
+                    <a
+                      href={`#${h.slug}`}
+                      data-toc={h.slug}
+                      class="-ml-px block border-l-2 border-transparent py-1 pl-4 text-sm leading-snug text-ink-500 transition hover:border-ink-300 hover:text-ink-800"
+                    >
+                      {h.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )
+        }
+
+        <div class="rounded-2xl border border-ink-200 bg-ink-50 p-5">
+          <p class="font-semibold text-ink-900">Find your tools</p>
+          <p class="mt-1.5 text-sm text-ink-500">
+            Side-by-side comparisons across every sales category.
+          </p>
+          <a
+            href="/tools"
+            class="mt-4 inline-block rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-ink-900 transition hover:bg-emerald-400"
+          >
+            Browse tools &rarr;
+          </a>
+        </div>
+
+        {
+          related.length > 0 && (
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-wider text-ink-400">
+                Keep reading
+              </p>
+              <ul class="mt-4 space-y-4">
+                {related.map((a) => (
+                  <li>
+                    <a href={`/resources/${a.id}`} class="group block">
+                      <span class="text-[11px] font-semibold uppercase tracking-wide text-emerald-600">
+                        {a.data.tag}
+                      </span>
+                      <span class="mt-1 block text-sm font-medium leading-snug text-ink-800 group-hover:text-emerald-700">
+                        {a.data.title}
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        }
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    // Scroll-spy: highlight the section currently in view in the right-hand TOC.
+    const links = Array.from(
+      document.querySelectorAll<HTMLAnchorElement>("[data-toc]"),
+    );
+    const byId = new Map(links.map((l) => [l.dataset.toc, l]));
+    const headings = Array.from(
+      document.querySelectorAll<HTMLElement>(".prose h2[id]"),
+    );
+    if (links.length && headings.length) {
+      const setActive = (id: string) => {
+        links.forEach((l) => l.classList.remove("toc-active"));
+        byId.get(id)?.classList.add("toc-active");
+      };
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) setActive((entry.target as HTMLElement).id);
+          }
+        },
+        { rootMargin: "-80px 0px -70% 0px", threshold: 0 },
+      );
+      headings.forEach((h) => observer.observe(h));
+    }
+  </script>
 </Base>

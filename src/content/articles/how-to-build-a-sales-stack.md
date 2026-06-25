@@ -4,6 +4,20 @@ description: "A practical, layer-by-layer guide to assembling a sales tech stack
 date: 2026-06-18
 tag: Guide
 author: TheSharkStack
+tools:
+  - hubspot-sales
+  - apollo
+  - outreach
+  - aircall
+  - gong
+  - calendly
+faq:
+  - q: What's the minimum viable sales stack?
+    a: A CRM, a prospecting-data source, and a scheduling link. For most early teams that's Pipedrive or HubSpot, plus Apollo, plus Calendly, enough to find, sequence, book, and track.
+  - q: Should I buy one all-in-one tool or best-of-breed?
+    a: Start all-in-one (HubSpot or Apollo) for speed and lower cost. Move to best-of-breed when a specific layer becomes a real bottleneck and you have the budget and process to run it.
+  - q: When should I add a dialer?
+    a: Once outbound calling is a core motion and reps spend real hours dialing. Below that volume, the built-in calling in your CRM is enough.
 ---
 
 A sales stack is just the set of tools that move a prospect from "never heard of you" to "signed." The trap is buying tools because competitors use them, then paying for overlap you never touch. The fix is to build by **layer**, pick one tool per job, and only add the next layer when the current one is fully used.

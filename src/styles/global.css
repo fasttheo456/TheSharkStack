@@ -85,6 +85,21 @@ p {
   line-height: 1.7;
 }
 
+/* Article body uses the clean sans (not the Anton display face) for readability. */
+.prose :is(h1, h2, h3, h4) {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: -0.012em;
+}
+
+/* Active section in the right-hand table of contents (scroll-spy). */
+.toc-active {
+  color: var(--color-emerald-700);
+  border-color: var(--color-emerald-500);
+  font-weight: 500;
+}
+
 /* Comic hero backdrop: stronger dot grid. */
 .bg-dotted {
   background-image: radial-gradient(

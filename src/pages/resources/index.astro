@@ -21,10 +21,22 @@ const fmtDate = (d: Date) =>
   title="Resources"
   description="Guides, explainers, and articles to help you choose and get the most from B2B sales SaaS."
 >
-  <section class="border-b border-ink-100 bg-white">
-    <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-      <h1 class="text-4xl font-semibold text-ink-900 sm:text-5xl">Resources</h1>
-      <p class="mt-3 max-w-2xl text-ink-500">
+  <!-- Header — dark band -->
+  <section class="relative overflow-hidden bg-ink-950 text-white">
+    <div
+      class="pointer-events-none absolute right-0 top-0 h-80 w-80"
+      style="background-image:radial-gradient(var(--color-emerald-500) 2px, transparent 2.4px); background-size:18px 18px; -webkit-mask-image:radial-gradient(circle at 80% 20%, #000, transparent 66%); mask-image:radial-gradient(circle at 80% 20%, #000, transparent 66%); opacity:0.16;"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="relative mx-auto max-w-6xl px-4 py-16 sm:px-6">
+      <p
+        class="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-400"
+      >
+        Guides &amp; comparisons
+      </p>
+      <h1 class="mt-4 text-5xl text-white sm:text-6xl">Resources</h1>
+      <p class="mt-4 max-w-2xl text-lg text-ink-300">
         Guides, explainers, and articles to help you choose the right sales
         tools, and get more out of the ones you have.
       </p>
@@ -33,11 +45,11 @@ const fmtDate = (d: Date) =>
 
   <!-- Articles -->
   <section class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-    <h2 class="text-3xl font-semibold text-ink-900">Latest articles</h2>
+    <h2 class="text-3xl text-ink-900">Latest articles</h2>
 
     {
       articles.length === 0 ? (
-        <div class="mt-8 rounded-2xl border border-dashed border-ink-200 bg-white p-12 text-center">
+        <div class="mt-8 rounded-2xl border-2 border-dashed border-ink-300 bg-white p-12 text-center">
           <p class="font-medium text-ink-700">No articles yet.</p>
           <p class="mt-1 text-sm text-ink-400">
             Articles added to the Resources collection will appear here.
@@ -48,23 +60,23 @@ const fmtDate = (d: Date) =>
           {articles.map((a) => (
             <a
               href={`/resources/${a.id}`}
-              class="group flex flex-col rounded-2xl border border-ink-100 bg-white p-6 transition hover:border-brand-300 hover:shadow-lg hover:shadow-brand-500/5"
+              class="group flex flex-col rounded-2xl border-2 border-ink-900 bg-white p-6 shadow-hard transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-hard-green"
             >
               <div class="flex items-center justify-between">
                 <span
-                  class={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${tagColor(a.data.tag)}`}
+                  class={`w-fit rounded-full border border-ink-900 px-3 py-0.5 text-xs font-semibold ${tagColor(a.data.tag)}`}
                 >
                   {a.data.tag}
                 </span>
                 <span class="text-xs text-ink-400">{fmtDate(a.data.date)}</span>
               </div>
-              <h3 class="mt-4 text-lg font-semibold text-ink-900 group-hover:text-brand-700">
+              <h3 class="mt-4 font-display text-lg uppercase tracking-wide text-ink-900 group-hover:text-emerald-700">
                 {a.data.title}
               </h3>
               <p class="mt-2 flex-1 text-sm text-ink-500">
                 {a.data.description}
               </p>
-              <span class="mt-4 text-sm font-medium text-brand-600">
+              <span class="mt-4 text-sm font-bold text-emerald-700">
                 Read more &rarr;
               </span>
             </a>
@@ -75,9 +87,9 @@ const fmtDate = (d: Date) =>
   </section>
 
   <!-- Category jump-off -->
-  <section class="border-t border-ink-100 bg-white">
+  <section class="border-y-2 border-ink-900 bg-white">
     <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-      <h2 class="text-3xl font-semibold text-ink-900">Explore by category</h2>
+      <h2 class="text-3xl text-ink-900">Explore by category</h2>
       <p class="mt-2 text-ink-500">
         Jump straight into the tools that matter for your goal.
       </p>
@@ -86,7 +98,7 @@ const fmtDate = (d: Date) =>
           categories.map((c) => (
             <a
               href={`/categories/${c.slug}`}
-              class="rounded-full border border-ink-200 bg-white px-4 py-2 text-sm font-medium text-ink-700 transition hover:border-brand-300 hover:text-brand-700"
+              class="rounded-full border-2 border-ink-900 bg-white px-4 py-2 text-sm font-semibold text-ink-800 transition hover:bg-emerald-50 hover:text-emerald-700"
             >
               {c.name}
             </a>
@@ -101,10 +113,10 @@ const fmtDate = (d: Date) =>
   <!-- Submit CTA -->
   <section class="mx-auto max-w-6xl px-4 py-20 sm:px-6">
     <div
-      class="flex flex-col items-start justify-between gap-6 rounded-2xl border border-ink-100 bg-white p-10 sm:flex-row sm:items-center"
+      class="flex flex-col items-start justify-between gap-6 rounded-2xl border-2 border-ink-900 bg-white p-10 shadow-hard sm:flex-row sm:items-center"
     >
       <div>
-        <h3 class="text-2xl font-semibold text-ink-900">
+        <h3 class="font-display text-2xl uppercase text-ink-900">
           Know a tool we're missing?
         </h3>
         <p class="mt-2 max-w-xl text-ink-500">
@@ -114,7 +126,7 @@ const fmtDate = (d: Date) =>
       </div>
       <a
         href="/submit"
-        class="inline-block flex-shrink-0 rounded-xl bg-brand-600 px-6 py-3 font-semibold text-white transition hover:bg-brand-700"
+        class="inline-block flex-shrink-0 rounded-xl border-2 border-ink-900 bg-emerald-500 px-6 py-3 font-bold text-ink-900 transition hover:bg-emerald-400"
       >
         Add your tool &rarr;
       </a>

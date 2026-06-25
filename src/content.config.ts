@@ -13,6 +13,10 @@ const articles = defineCollection({
     tag: z.string().default("Guide"),
     author: z.string().optional(),
     draft: z.boolean().default(false),
+    /* Optional: tool slugs to feature as Allo-style review cards. */
+    tools: z.array(z.string()).optional(),
+    /* Optional: FAQ shown at the end of the article. */
+    faq: z.array(z.object({ q: z.string(), a: z.string() })).optional(),
   }),
 });
 
